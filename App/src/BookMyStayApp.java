@@ -72,7 +72,7 @@ class BookingRequestQueue {
  * Use Case 5: Booking Request (First-Come-First-Served)
  */
 
-public class UseCase5BookingRequestQueue {
+public class BookMyStayApp {
 
     public static void main(String[] args) {
 
