@@ -1,10 +1,9 @@
 # BookMyStayApp
-## Use Case 6 – Reservation Confirmation & Room Allocation
+## Use Case 7 – Add-On Service Selection
 
-* Confirms booking requests using FIFO processing order.
-* Generates unique room IDs for each reservation.
-* Uses Set<String> to prevent duplicate room assignments.
-* Tracks allocated rooms using HashMap<String, Set<String>>.
-* Updates inventory immediately after allocation.
-* Prevents double-booking through uniqueness enforcement.
-* Ensures consistency between booking confirmation and inventory state.
+* Introduces optional service attachment to confirmed reservations.
+* Uses Map<String, List<AddOnService>> to map services to reservations.
+* Supports multiple services per reservation.
+* Calculates total additional service cost dynamically.
+* Keeps add-on logic separate from booking and inventory logic.
+* Demonstrates extensibility using composition-based design.
