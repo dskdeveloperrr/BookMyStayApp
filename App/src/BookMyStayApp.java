@@ -7,6 +7,20 @@ import java.util.*;
 
 /**
  * ============================================================
+ * CLASS - InvalidBookingException
+ * ============================================================
+ */
+
+class InvalidBookingException extends Exception {
+
+    public InvalidBookingException(String message) {
+        super(message);
+    }
+}
+
+
+/**
+ * ============================================================
  * CLASS - RoomInventory
  * ============================================================
  */
@@ -24,15 +38,110 @@ class RoomInventory {
         availability.put("Suite", 2);
     }
 
+    public boolean isValidRoomType(String roomType) {
+
+        return availability.containsKey(roomType);
+    }
+
+    public int getAvailability(String roomType) {
+
+        return availability.getOrDefault(roomType, 0);
+    }
+
     public void increaseAvailability(String roomType) {
 
         availability.put(roomType,
                 availability.get(roomType) + 1);
     }
+}
 
-    public int getAvailability(String roomType) {
 
-        return availability.get(roomType);
+/**
+ * ============================================================
+ * CLASS - Reservation
+ * ============================================================
+ */
+
+class Reservation {
+
+    private String guestName;
+    private String roomType;
+
+    public Reservation(String guestName, String roomType) {
+
+        this.guestName = guestName;
+        this.roomType = roomType;
+    }
+
+    public String getGuestName() {
+
+        return guestName;
+    }
+
+    public String getRoomType() {
+
+        return roomType;
+    }
+}
+
+
+/**
+ * ============================================================
+ * CLASS - BookingRequestQueue
+ * ============================================================
+ */
+
+class BookingRequestQueue {
+
+    private Queue<Reservation> queue;
+
+    public BookingRequestQueue() {
+
+        queue = new LinkedList<>();
+    }
+
+    public void addRequest(Reservation reservation) {
+
+        queue.offer(reservation);
+    }
+}
+
+
+/**
+ * ============================================================
+ * CLASS - ReservationValidator
+ * ============================================================
+ */
+
+class ReservationValidator {
+
+    public void validate(
+            String guestName,
+            String roomType,
+            RoomInventory inventory)
+
+            throws InvalidBookingException {
+
+
+        if (guestName == null || guestName.trim().isEmpty()) {
+
+            throw new InvalidBookingException(
+                    "Guest name cannot be empty.");
+        }
+
+
+        if (!inventory.isValidRoomType(roomType)) {
+
+            throw new InvalidBookingException(
+                    "Invalid room type selected.");
+        }
+
+
+        if (inventory.getAvailability(roomType) <= 0) {
+
+            throw new InvalidBookingException(
+                    "Selected room type is not available.");
+        }
     }
 }
 
@@ -41,8 +150,6 @@ class RoomInventory {
  * ============================================================
  * CLASS - CancellationService
  * ============================================================
- *
- * Use Case 10: Booking Cancellation & Inventory Rollback
  */
 
 class CancellationService {
@@ -119,7 +226,7 @@ class CancellationService {
 
 /**
  * ============================================================
- * MAIN CLASS - UseCase10BookingCancellation
+ * MAIN CLASS - BookMyStayApp
  * ============================================================
  */
 
@@ -129,27 +236,21 @@ public class BookMyStayApp {
 
         System.out.println("Booking Cancellation");
 
-
         RoomInventory inventory =
                 new RoomInventory();
 
-
         CancellationService cancellationService =
                 new CancellationService();
-
 
         cancellationService.registerBooking(
                 "Single-1",
                 "Single");
 
-
         cancellationService.cancelBooking(
                 "Single-1",
                 inventory);
 
-
         cancellationService.showRollbackHistory();
-
 
         System.out.println(
                 "\nUpdated Single Room Availability: "
