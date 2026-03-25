@@ -1,9 +1,10 @@
 # BookMyStayApp
-## Use Case 1 – Application Entry & Welcome Message
+## Use Case 2 – Basic Room Types & Static Availability
 
-* Establishes the entry point of the Hotel Booking application.
-* Demonstrates execution starting from the main() method.
-* Displays application name and version information.
-* Prints a system initialization confirmation message.
-* Introduces basic Java concepts like classes, static methods, and console output.
-* Serves as the foundation for the Hotel Booking Management System.
+* Introduces object-oriented modeling using abstraction and inheritance.
+* Uses an abstract Room class to define common room attributes.
+* Implements SingleRoom, DoubleRoom, and SuiteRoom using inheritance.
+* Demonstrates polymorphism using Room references.
+* Stores availability using simple variables.
+* Displays room details and availability on the console.
+* Establishes the foundation for future booking and inventory management.
