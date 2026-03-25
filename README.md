@@ -1,9 +1,9 @@
 # BookMyStayApp
-## Use Case 9 – Error Handling & Validation
+## Use Case 10 – Booking Cancellation & Inventory Rollback
 
-* Introduces structured validation before booking processing.
-* Uses custom exception InvalidBookingException for domain errors.
-* Validates guest name and room type input.
-* Prevents invalid inventory access and negative availability.
-* Demonstrates fail-fast validation strategy.
-* Ensures graceful handling of booking failures without system crash.
+* Enables safe cancellation of confirmed bookings.
+* Uses Stack<String> to track rollback history (LIFO order).
+* Maintains reservation-to-room-type mapping using HashMap.
+* Restores inventory immediately after cancellation.
+* Prevents cancellation of non-existent reservations.
+* Demonstrates controlled rollback and state recovery logic.
