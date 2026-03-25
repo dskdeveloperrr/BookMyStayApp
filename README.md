@@ -1,10 +1,10 @@
 # BookMyStayApp
-## Use Case 2 – Basic Room Types & Static Availability
+## Use Case 3 – Centralized Room Inventory Management
 
-* Introduces object-oriented modeling using abstraction and inheritance.
-* Uses an abstract Room class to define common room attributes.
-* Implements SingleRoom, DoubleRoom, and SuiteRoom using inheritance.
-* Demonstrates polymorphism using Room references.
-* Stores availability using simple variables.
-* Displays room details and availability on the console.
-* Establishes the foundation for future booking and inventory management.
+* Introduces centralized inventory management using HashMap.
+* Stores room availability using HashMap<String, Integer>.
+* Provides O(1) lookup and updates for room counts.
+* Ensures a single source of truth for availability.
+* Encapsulates inventory logic inside RoomInventory class.
+* Separates room properties from inventory state.
+* Improves scalability for adding new room types.
