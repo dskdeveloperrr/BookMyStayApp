@@ -1,10 +1,9 @@
 # BookMyStayApp
-## Use Case 2 – Basic Room Types & Static Availability
+## Use Case 10 – Booking Cancellation & Inventory Rollback
 
-* Introduces object-oriented modeling using abstraction and inheritance.
-* Uses an abstract Room class to define common room attributes.
-* Implements SingleRoom, DoubleRoom, and SuiteRoom using inheritance.
-* Demonstrates polymorphism using Room references.
-* Stores availability using simple variables.
-* Displays room details and availability on the console.
-* Establishes the foundation for future booking and inventory management.
+* Enables safe cancellation of confirmed bookings.
+* Uses Stack<String> to track rollback history (LIFO order).
+* Maintains reservation-to-room-type mapping using HashMap.
+* Restores inventory immediately after cancellation.
+* Prevents cancellation of non-existent reservations.
+* Demonstrates controlled rollback and state recovery logic.

@@ -1,96 +1,158 @@
 /**
  * @author Developer
- * @version 2.0
+ * @version 10.0
  */
+
+import java.util.*;
 
 /**
  * ============================================================
- * ABSTRACT CLASS - Room
+ * CLASS - RoomInventory
  * ============================================================
  */
-abstract class Room {
 
-    protected int numberOfBeds;
-    protected int squareFeet;
-    protected double pricePerNight;
+class RoomInventory {
 
-    public Room(int numberOfBeds, int squareFeet, double pricePerNight) {
-        this.numberOfBeds = numberOfBeds;
-        this.squareFeet = squareFeet;
-        this.pricePerNight = pricePerNight;
+    private Map<String, Integer> availability;
+
+    public RoomInventory() {
+
+        availability = new HashMap<>();
+
+        availability.put("Single", 5);
+        availability.put("Double", 3);
+        availability.put("Suite", 2);
     }
 
-    public void displayRoomDetails() {
-        System.out.println("Beds: " + numberOfBeds);
-        System.out.println("Size: " + squareFeet + " sqft");
-        System.out.println("Price per night: " + pricePerNight);
-    }
-}
+    public void increaseAvailability(String roomType) {
 
-/**
- * ============================================================
- * CLASS - SingleRoom
- * ============================================================
- */
-class SingleRoom extends Room {
-    public SingleRoom() {
-        super(1, 250, 1500.0);
+        availability.put(roomType,
+                availability.get(roomType) + 1);
+    }
+
+    public int getAvailability(String roomType) {
+
+        return availability.get(roomType);
     }
 }
 
-/**
- * ============================================================
- * CLASS - DoubleRoom
- * ============================================================
- */
-class DoubleRoom extends Room {
-    public DoubleRoom() {
-        super(2, 400, 2500.0);
-    }
-}
 
 /**
  * ============================================================
- * CLASS - SuiteRoom
- * ============================================================
- */
-class SuiteRoom extends Room {
-    public SuiteRoom() {
-        super(3, 750, 5000.0);
-    }
-}
-
-/**
- * ============================================================
- * MAIN CLASS - BookMyStayApp
+ * CLASS - CancellationService
  * ============================================================
  *
- * Use Case 2: Basic Room Types & Static Availability
+ * Use Case 10: Booking Cancellation & Inventory Rollback
  */
+
+class CancellationService {
+
+    private Stack<String> releasedRoomIds;
+
+    private Map<String, String> reservationRoomTypeMap;
+
+    public CancellationService() {
+
+        releasedRoomIds = new Stack<>();
+
+        reservationRoomTypeMap = new HashMap<>();
+    }
+
+
+    public void registerBooking(
+            String reservationId,
+            String roomType) {
+
+        reservationRoomTypeMap.put(
+                reservationId,
+                roomType);
+    }
+
+
+    public void cancelBooking(
+            String reservationId,
+            RoomInventory inventory) {
+
+        if (!reservationRoomTypeMap
+                .containsKey(reservationId)) {
+
+            System.out.println(
+                    "Invalid cancellation request.");
+            return;
+        }
+
+
+        String roomType =
+                reservationRoomTypeMap.get(reservationId);
+
+
+        releasedRoomIds.push(reservationId);
+
+
+        inventory.increaseAvailability(roomType);
+
+
+        reservationRoomTypeMap.remove(reservationId);
+
+
+        System.out.println(
+                "Booking cancelled successfully. "
+                        + "Inventory restored for room type: "
+                        + roomType);
+    }
+
+
+    public void showRollbackHistory() {
+
+        System.out.println(
+                "\nRollback History (Most Recent First):");
+
+        while (!releasedRoomIds.isEmpty()) {
+
+            System.out.println(
+                    "Released Reservation ID: "
+                            + releasedRoomIds.pop());
+        }
+    }
+}
+
+
+/**
+ * ============================================================
+ * MAIN CLASS - UseCase10BookingCancellation
+ * ============================================================
+ */
+
 public class BookMyStayApp {
 
     public static void main(String[] args) {
 
-        System.out.println("Hotel Room Initialization\n");
+        System.out.println("Booking Cancellation");
 
-        Room single = new SingleRoom();
-        Room doubleRoom = new DoubleRoom();
-        Room suite = new SuiteRoom();
 
-        int singleAvailable = 5;
-        int doubleAvailable = 3;
-        int suiteAvailable = 2;
+        RoomInventory inventory =
+                new RoomInventory();
 
-        System.out.println("Single Room:");
-        single.displayRoomDetails();
-        System.out.println("Available: " + singleAvailable + "\n");
 
-        System.out.println("Double Room:");
-        doubleRoom.displayRoomDetails();
-        System.out.println("Available: " + doubleAvailable + "\n");
+        CancellationService cancellationService =
+                new CancellationService();
 
-        System.out.println("Suite Room:");
-        suite.displayRoomDetails();
-        System.out.println("Available: " + suiteAvailable);
+
+        cancellationService.registerBooking(
+                "Single-1",
+                "Single");
+
+
+        cancellationService.cancelBooking(
+                "Single-1",
+                inventory);
+
+
+        cancellationService.showRollbackHistory();
+
+
+        System.out.println(
+                "\nUpdated Single Room Availability: "
+                        + inventory.getAvailability("Single"));
     }
 }
