@@ -1,10 +1,9 @@
 # BookMyStayApp
-## Use Case 2 – Basic Room Types & Static Availability
+## Use Case 9 – Error Handling & Validation
 
-* Introduces object-oriented modeling using abstraction and inheritance.
-* Uses an abstract Room class to define common room attributes.
-* Implements SingleRoom, DoubleRoom, and SuiteRoom using inheritance.
-* Demonstrates polymorphism using Room references.
-* Stores availability using simple variables.
-* Displays room details and availability on the console.
-* Establishes the foundation for future booking and inventory management.
+* Introduces structured validation before booking processing.
+* Uses custom exception InvalidBookingException for domain errors.
+* Validates guest name and room type input.
+* Prevents invalid inventory access and negative availability.
+* Demonstrates fail-fast validation strategy.
+* Ensures graceful handling of booking failures without system crash.
