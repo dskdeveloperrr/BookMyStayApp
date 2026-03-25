@@ -1,9 +1,9 @@
 # BookMyStayApp
-## Use Case 7 – Add-On Service Selection
+## Use Case 8 – Booking History & Reporting
 
-* Introduces optional service attachment to confirmed reservations.
-* Uses Map<String, List<AddOnService>> to map services to reservations.
-* Supports multiple services per reservation.
-* Calculates total additional service cost dynamically.
-* Keeps add-on logic separate from booking and inventory logic.
-* Demonstrates extensibility using composition-based design.
+* Stores confirmed bookings using List<Reservation>.
+* Maintains booking history in chronological order.
+* Supports retrieval of stored reservation records.
+* Generates summary reports using BookingReportService.
+* Separates storage logic from reporting logic.
+* Provides audit trail visibility for administrators.
