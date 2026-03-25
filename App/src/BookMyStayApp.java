@@ -1,59 +1,8 @@
-/**
+/*
  * @author Developer
- * @version 10.0
+ * @version 11.0
  */
-
 import java.util.*;
-
-/**
- * ============================================================
- * CLASS - InvalidBookingException
- * ============================================================
- */
-
-class InvalidBookingException extends Exception {
-
-    public InvalidBookingException(String message) {
-        super(message);
-    }
-}
-
-
-/**
- * ============================================================
- * CLASS - RoomInventory
- * ============================================================
- */
-
-class RoomInventory {
-
-    private Map<String, Integer> availability;
-
-    public RoomInventory() {
-
-        availability = new HashMap<>();
-
-        availability.put("Single", 5);
-        availability.put("Double", 3);
-        availability.put("Suite", 2);
-    }
-
-    public boolean isValidRoomType(String roomType) {
-
-        return availability.containsKey(roomType);
-    }
-
-    public int getAvailability(String roomType) {
-
-        return availability.getOrDefault(roomType, 0);
-    }
-
-    public void increaseAvailability(String roomType) {
-
-        availability.put(roomType,
-                availability.get(roomType) + 1);
-    }
-}
 
 
 /**
@@ -93,132 +42,168 @@ class Reservation {
 
 class BookingRequestQueue {
 
-    private Queue<Reservation> queue;
+    private Queue<Reservation> requestQueue;
 
     public BookingRequestQueue() {
 
-        queue = new LinkedList<>();
+        requestQueue = new LinkedList<>();
     }
 
     public void addRequest(Reservation reservation) {
 
-        queue.offer(reservation);
+        requestQueue.offer(reservation);
+    }
+
+    public Reservation getNextRequest() {
+
+        return requestQueue.poll();
+    }
+
+    public boolean hasPendingRequests() {
+
+        return !requestQueue.isEmpty();
     }
 }
 
 
 /**
  * ============================================================
- * CLASS - ReservationValidator
+ * CLASS - RoomInventory
  * ============================================================
  */
 
-class ReservationValidator {
+class RoomInventory {
 
-    public void validate(
-            String guestName,
-            String roomType,
-            RoomInventory inventory)
+    private Map<String, Integer> availability;
 
-            throws InvalidBookingException {
+    public RoomInventory() {
+
+        availability = new HashMap<>();
+
+        availability.put("Single", 5);
+        availability.put("Double", 3);
+        availability.put("Suite", 2);
+    }
+
+    public int getAvailability(String roomType) {
+
+        return availability.get(roomType);
+    }
+
+    public void decreaseAvailability(String roomType) {
+
+        availability.put(
+                roomType,
+                availability.get(roomType) - 1
+        );
+    }
+}
 
 
-        if (guestName == null || guestName.trim().isEmpty()) {
+/**
+ * ============================================================
+ * CLASS - RoomAllocationService
+ * ============================================================
+ */
 
-            throw new InvalidBookingException(
-                    "Guest name cannot be empty.");
-        }
+class RoomAllocationService {
 
+    private Map<String, Integer> roomCounters;
 
-        if (!inventory.isValidRoomType(roomType)) {
+    public RoomAllocationService() {
 
-            throw new InvalidBookingException(
-                    "Invalid room type selected.");
-        }
+        roomCounters = new HashMap<>();
 
+        roomCounters.put("Single", 1);
+        roomCounters.put("Double", 1);
+        roomCounters.put("Suite", 1);
+    }
+
+    public void allocateRoom(
+            Reservation reservation,
+            RoomInventory inventory) {
+
+        String roomType = reservation.getRoomType();
 
         if (inventory.getAvailability(roomType) <= 0) {
 
-            throw new InvalidBookingException(
-                    "Selected room type is not available.");
-        }
-    }
-}
-
-
-/**
- * ============================================================
- * CLASS - CancellationService
- * ============================================================
- */
-
-class CancellationService {
-
-    private Stack<String> releasedRoomIds;
-
-    private Map<String, String> reservationRoomTypeMap;
-
-    public CancellationService() {
-
-        releasedRoomIds = new Stack<>();
-
-        reservationRoomTypeMap = new HashMap<>();
-    }
-
-
-    public void registerBooking(
-            String reservationId,
-            String roomType) {
-
-        reservationRoomTypeMap.put(
-                reservationId,
-                roomType);
-    }
-
-
-    public void cancelBooking(
-            String reservationId,
-            RoomInventory inventory) {
-
-        if (!reservationRoomTypeMap
-                .containsKey(reservationId)) {
-
             System.out.println(
-                    "Invalid cancellation request.");
+                    "No rooms available for "
+                            + reservation.getGuestName()
+            );
+
             return;
         }
 
+        int counter = roomCounters.get(roomType);
 
-        String roomType =
-                reservationRoomTypeMap.get(reservationId);
+        String roomId = roomType + "-" + counter;
 
+        roomCounters.put(roomType, counter + 1);
 
-        releasedRoomIds.push(reservationId);
-
-
-        inventory.increaseAvailability(roomType);
-
-
-        reservationRoomTypeMap.remove(reservationId);
-
+        inventory.decreaseAvailability(roomType);
 
         System.out.println(
-                "Booking cancelled successfully. "
-                        + "Inventory restored for room type: "
-                        + roomType);
+                "Booking confirmed for Guest: "
+                        + reservation.getGuestName()
+                        + ", Room ID: "
+                        + roomId
+        );
+    }
+}
+
+
+/**
+ * ============================================================
+ * CLASS - ConcurrentBookingProcessor
+ * ============================================================
+ */
+
+class ConcurrentBookingProcessor implements Runnable {
+
+    private BookingRequestQueue bookingQueue;
+
+    private RoomInventory inventory;
+
+    private RoomAllocationService allocationService;
+
+    public ConcurrentBookingProcessor(
+            BookingRequestQueue bookingQueue,
+            RoomInventory inventory,
+            RoomAllocationService allocationService) {
+
+        this.bookingQueue = bookingQueue;
+        this.inventory = inventory;
+        this.allocationService = allocationService;
     }
 
 
-    public void showRollbackHistory() {
+    @Override
+    public void run() {
 
-        System.out.println(
-                "\nRollback History (Most Recent First):");
+        while (true) {
 
-        while (!releasedRoomIds.isEmpty()) {
+            Reservation reservation;
 
-            System.out.println(
-                    "Released Reservation ID: "
-                            + releasedRoomIds.pop());
+            synchronized (bookingQueue) {
+
+                if (!bookingQueue.hasPendingRequests()) {
+
+                    return;
+                }
+
+                reservation =
+                        bookingQueue.getNextRequest();
+            }
+
+
+            synchronized (inventory) {
+
+                allocationService.allocateRoom(
+                        reservation,
+                        inventory
+                );
+            }
         }
     }
 }
@@ -226,7 +211,7 @@ class CancellationService {
 
 /**
  * ============================================================
- * MAIN CLASS - BookMyStayApp
+ * MAIN CLASS - UseCase11ConcurrentBookingSimulation
  * ============================================================
  */
 
@@ -234,26 +219,80 @@ public class BookMyStayApp {
 
     public static void main(String[] args) {
 
-        System.out.println("Booking Cancellation");
+        System.out.println(
+                "Concurrent Booking Simulation\n"
+        );
+
+
+        BookingRequestQueue bookingQueue =
+                new BookingRequestQueue();
 
         RoomInventory inventory =
                 new RoomInventory();
 
-        CancellationService cancellationService =
-                new CancellationService();
+        RoomAllocationService allocationService =
+                new RoomAllocationService();
 
-        cancellationService.registerBooking(
-                "Single-1",
-                "Single");
 
-        cancellationService.cancelBooking(
-                "Single-1",
-                inventory);
+        bookingQueue.addRequest(
+                new Reservation("Abhi", "Single"));
 
-        cancellationService.showRollbackHistory();
+        bookingQueue.addRequest(
+                new Reservation("Vanmathi", "Double"));
+
+        bookingQueue.addRequest(
+                new Reservation("Kural", "Suite"));
+
+        bookingQueue.addRequest(
+                new Reservation("Subha", "Single"));
+
+
+        Thread t1 = new Thread(
+                new ConcurrentBookingProcessor(
+                        bookingQueue,
+                        inventory,
+                        allocationService));
+
+        Thread t2 = new Thread(
+                new ConcurrentBookingProcessor(
+                        bookingQueue,
+                        inventory,
+                        allocationService));
+
+
+        t1.start();
+        t2.start();
+
+
+        try {
+
+            t1.join();
+            t2.join();
+
+        }
+
+        catch (InterruptedException e) {
+
+            System.out.println(
+                    "Thread execution interrupted."
+            );
+        }
+
 
         System.out.println(
-                "\nUpdated Single Room Availability: "
+                "\nRemaining Inventory:"
+        );
+
+        System.out.println(
+                "Single: "
                         + inventory.getAvailability("Single"));
+
+        System.out.println(
+                "Double: "
+                        + inventory.getAvailability("Double"));
+
+        System.out.println(
+                "Suite: "
+                        + inventory.getAvailability("Suite"));
     }
 }
