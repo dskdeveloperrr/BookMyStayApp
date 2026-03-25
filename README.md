@@ -1,9 +1,9 @@
 # BookMyStayApp
-## Use Case 11 – Concurrent Booking Simulation (Thread Safety)
+## Use Case 12 – Data Persistence & System Recovery
 
-* Simulates multiple booking requests processed simultaneously.
-* Uses Runnable interface for concurrent execution.
-* Synchronizes booking queue access to avoid race conditions.
-* Synchronizes inventory updates during allocation.
-* Prevents double booking under multi-threaded execution.
-* Demonstrates thread-safe handling of shared resources.
+* Saves room inventory state to a text file.
+* Restores inventory automatically during application startup.
+* Uses plain-text serialization format (roomType=count).
+* Handles missing or corrupted persistence files safely.
+* Demonstrates file-based persistence without database usage.
+* Enables recovery of system state after restart.
