@@ -1,9 +1,10 @@
 # BookMyStayApp
-## Use Case 5 – Booking Request (First-Come-First-Served)
+## Use Case 6 – Reservation Confirmation & Room Allocation
 
-* Introduces booking request handling using Queue data structure.
-* Stores booking requests using Queue<Reservation>.
-* Ensures FIFO processing of booking requests.
-* Maintains fairness during simultaneous booking attempts.
-* Separates request intake from room allocation logic.
-* Prepares requests for later inventory-based allocation.
+* Confirms booking requests using FIFO processing order.
+* Generates unique room IDs for each reservation.
+* Uses Set<String> to prevent duplicate room assignments.
+* Tracks allocated rooms using HashMap<String, Set<String>>.
+* Updates inventory immediately after allocation.
+* Prevents double-booking through uniqueness enforcement.
+* Ensures consistency between booking confirmation and inventory state.
