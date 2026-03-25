@@ -1,10 +1,10 @@
 # BookMyStayApp
-## Use Case 3 – Centralized Room Inventory Management
+## Use Case 4 – Room Search & Availability Check
 
-* Introduces centralized inventory management using HashMap.
-* Stores room availability using HashMap<String, Integer>.
-* Provides O(1) lookup and updates for room counts.
-* Ensures a single source of truth for availability.
-* Encapsulates inventory logic inside RoomInventory class.
-* Separates room properties from inventory state.
-* Improves scalability for adding new room types.
+* Implements read-only room search functionality.
+* Retrieves availability data from RoomInventory.
+* Displays only rooms with availability greater than zero.
+* Uses Room objects to show pricing and room details.
+* Maintains separation between search logic and booking logic.
+* Ensures inventory data is not modified during search operations.
+* Demonstrates safe access to shared system state.
