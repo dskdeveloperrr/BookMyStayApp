@@ -137,4 +137,4 @@ public class BookMyStayApp {
         System.out.println("Available Rooms: "
                 + inventory.getRoomAvailability().get("Suite Room"));
     }
-}}
+}
