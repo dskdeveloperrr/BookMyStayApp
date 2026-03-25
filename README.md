@@ -1,9 +1,9 @@
 # BookMyStayApp
-## Use Case 8 – Booking History & Reporting
+## Use Case 9 – Error Handling & Validation
 
-* Stores confirmed bookings using List<Reservation>.
-* Maintains booking history in chronological order.
-* Supports retrieval of stored reservation records.
-* Generates summary reports using BookingReportService.
-* Separates storage logic from reporting logic.
-* Provides audit trail visibility for administrators.
+* Introduces structured validation before booking processing.
+* Uses custom exception InvalidBookingException for domain errors.
+* Validates guest name and room type input.
+* Prevents invalid inventory access and negative availability.
+* Demonstrates fail-fast validation strategy.
+* Ensures graceful handling of booking failures without system crash.
